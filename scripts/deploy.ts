@@ -3,35 +3,43 @@ import { ethers } from "hardhat"
 import hre from "hardhat";
 import { Contract } from "ethers";
 import fs from "fs";
-import l  from "../libs/logger"
+import l from "../libs/logger"
 
 require("dotenv").config()
 
 export interface IBucket {
   Feeto: string
-  WETH?:Contract
-  // PancakeToken?: Contract
+  WETH?: Contract
+  Cake?: Contract
+  Syrup?: Contract
   PancakeFactory?: Contract
   PancakeRouter?: Contract
+  MasterChef?: Contract
+  MasterChefV2?: Contract
+  TokenA?: Contract
+  TokenB?: Contract
+  TokenC?: Contract
+  TokenD?: Contract
+
 }
 type fn = () => Promise<Contract>;
 
 
 
 const fileName = ".deploy";
-let Contracts: IBucket = { Feeto: process.env.Feeto?? "There is no env `FeeTo`" };
+let Contracts: IBucket = { Feeto: process.env.Feeto ?? "There is no env `FeeTo`" };
 let Deployments: fn[] = [];
 
-const dump = async (key: string, address :string) =>{
+const dump = async (key: string, address: string) => {
   const data = `${key}=${address}
 `
   fs.appendFileSync(fileName, data)
 }
-const intiForDump = async() => {
-  try{
+const intiForDump = async () => {
+  try {
     const time = new Date().toTimeString().split(" ")[0];
     await fs.promises.rename(fileName, `${fileName}_${time}`)
-  }catch(e) {
+  } catch (e) {
     l.Notice('there is no dump file.')
   }
   fs.appendFileSync(fileName, `network=${hre.network.name}`)
@@ -44,7 +52,7 @@ const deploy_tokenA = async () => {
   let fac
   fac = await ethers.getContractFactory(name)
   const con = await fac.deploy()
-  Contracts.WETH= con
+  Contracts.TokenA = con
   dump("tokenA", con.address)
   return con
 }
@@ -54,8 +62,29 @@ const deploy_tokenB = async () => {
   let fac
   fac = await ethers.getContractFactory(name)
   const con = await fac.deploy()
-  Contracts.WETH= con
+  Contracts.TokenB = con
   dump("tokenB", con.address)
+  return con
+}
+
+const deploy_tokenC = async () => {
+  const name: string = "WBNB"
+  l.Deploy("tokenC")
+  let fac
+  fac = await ethers.getContractFactory(name)
+  const con = await fac.deploy()
+  Contracts.TokenC = con
+  dump("tokenC", con.address)
+  return con
+}
+const deploy_tokenD = async () => {
+  const name: string = "WBNB"
+  l.Deploy("tokenD")
+  let fac
+  fac = await ethers.getContractFactory(name)
+  const con = await fac.deploy()
+  Contracts.TokenD = con
+  dump("tokenD", con.address)
   return con
 }
 
@@ -65,7 +94,28 @@ const deploy_weth = async () => {
   let fac
   fac = await ethers.getContractFactory(name)
   const con = await fac.deploy()
-  Contracts.WETH= con
+  Contracts.WETH = con
+  dump(name, con.address)
+  return con
+}
+
+const deploy_cake = async () => {
+  const name: string = "CakeToken"
+  l.Deploy(name)
+  let fac
+  fac = await ethers.getContractFactory(name)
+  const con = await fac.deploy()
+  Contracts.Cake = con
+  dump(name, con.address)
+  return con
+}
+const deploy_syrup = async () => {
+  const name: string = "SyrupBar"
+  l.Deploy(name)
+  let fac
+  fac = await ethers.getContractFactory(name)
+  const con = await fac.deploy(Contracts.Cake?.address)
+  Contracts.Syrup = con
   dump(name, con.address)
   return con
 }
@@ -91,6 +141,36 @@ const deploy_pancakeRouter = async () => {
   return con
 }
 
+const deploy_MasterChefV1 = async () => {
+  const name: string = "MasterChef"
+  l.Deploy(name)
+  const fac = await ethers.getContractFactory(name)
+  const con = await fac.deploy(Contracts.Cake?.address,
+    Contracts.Syrup?.address,
+    process.env.Dev,
+    100,
+    ethers.BigNumber.from(3))
+  await con.deployed()
+  Contracts.MasterChef = con
+  dump(name, con.address)
+  return con
+}
+
+const deploy_MasterChefV2 = async () => {
+  const name: string = "MasterChefV2"
+  l.Deploy(name)
+  const fac = await ethers.getContractFactory(name)
+  const con = await fac.deploy(Contracts.MasterChef?.address ,
+     Contracts.Cake?.address,
+     ethers.BigNumber.from(256), // MasterPID
+     process.env.BurnAdmin
+      )
+  await con.deployed()
+  Contracts.MasterChefV2 = con
+  dump(name, con.address)
+  return con
+}
+
 const deploying = async () => {
   await intiForDump()
   Deployments = [
@@ -98,25 +178,17 @@ const deploying = async () => {
     deploy_pancakeFactory,
     deploy_pancakeRouter,
     deploy_tokenA,
-    deploy_tokenB
+    deploy_tokenB,
+    deploy_tokenC,
+    deploy_tokenD,
+    deploy_cake,
+    deploy_syrup,
+    deploy_MasterChefV1,
+    deploy_MasterChefV2
   ]
 
-  console.log(`d length : ${Deployments.length}`)
-  for (let i  = 0; i< Deployments.length ; i++){
-    console.log(`index :${i}`)
+  for (let i = 0; i < Deployments.length; i++) {
     await Deployments[i]()
   }
 }
-async function excute() {
-  // await run("compile")
-  await deploying()
-  
-}
-excute()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
-
-export { deploying, Deployments ,Contracts }
+export { deploying, Deployments, Contracts }

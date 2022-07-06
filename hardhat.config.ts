@@ -1,4 +1,5 @@
 require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-ganache");
 import { task } from "hardhat/config";
 import { version } from "os";
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -35,7 +36,11 @@ module.exports = {
   networks: {
     hardhat: {
       chainId: 1337,
-      allowUnlimitedContractSize: true
+      allowUnlimitedContractSize: true,
+      // mining:{
+      //   auto: false,
+      //   interval: [1000, 3000],
+      // }
     },
     /*
     ropsten: {

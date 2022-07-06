@@ -1,6 +1,5 @@
 import { ethers } from "hardhat"
 import hre from "hardhat";
-import { tokenToString } from "typescript"
 import Table from "cli-table3"
 import { table } from "console"
 import logger from "../libs/logger"
@@ -12,7 +11,7 @@ interface IToken extends IOutliner {
   tokenAddress: string
   symbol: string
 }
-class Token implements IToken {
+export class Token implements IToken {
   tokenAddress: string;
   symbol: string
   constructor(addr: string, smb: string) {
@@ -74,6 +73,7 @@ export default class CashFlow {
       const _c = [_b.token.symbol, _b.token.tokenAddress, _b.wei,  ""]
       _t.push(_c) 
     }
+    // console.log(`t :${_t.toString() }`)
     return _t.toString()
   }
 
@@ -90,7 +90,8 @@ export default class CashFlow {
         this.accountList.push(_acc[i])
       }
     }
-    logger.Notice(`Added watching [[Accounts]] ${this.accountList.toString()}`)
+    // logger.Notice(`Added watching [[Accounts]] ${this.accountList.toString()}`)
+    logger.Notice(`Added watching [[Accounts]] ${this.accountList[this.accountList.length-1]}`)
   }
   appendToken(..._tokens: IToken[]): void {
     for (let i = 0; i < _tokens.length; i++) {
@@ -105,7 +106,8 @@ export default class CashFlow {
         this.tokenList.push(_tokens[i])
       }
     }
-    logger.Notice(`Added watching list[[TOKEN]] ${this.accountList.toString()}`)
+    // logger.Notice(`Added watching list[[TOKEN]] ${this.tokenList.toString()}`)
+    logger.Notice(`Added watching list[[TOKEN]] ${this.tokenList[this.tokenList.length-1]}`)
   }
   getTokens(): IToken[] {
     return this.tokenList

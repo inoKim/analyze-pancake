@@ -15,7 +15,7 @@
 */
 
 pragma solidity =0.5.16;
-
+import "hardhat/console.sol";
 
 interface IPancakeFactory {
     event PairCreated(address indexed token0, address indexed token1, address pair, uint);
@@ -272,7 +272,6 @@ interface IPancakeCallee {
 contract PancakePair is IPancakePair, PancakeERC20 {
     using SafeMath  for uint;
     using UQ112x112 for uint224;
-
     uint public constant MINIMUM_LIQUIDITY = 10**3;
     bytes4 private constant SELECTOR = bytes4(keccak256(bytes('transfer(address,uint256)')));
 
@@ -474,6 +473,7 @@ contract PancakeFactory is IPancakeFactory {
 
     constructor(address _feeToSetter) public {
         feeToSetter = _feeToSetter;
+        console.logBytes32(INIT_CODE_PAIR_HASH);
     }
 
     function allPairsLength() external view returns (uint) {
