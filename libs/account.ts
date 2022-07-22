@@ -90,8 +90,7 @@ export default class CashFlow {
         this.accountList.push(_acc[i])
       }
     }
-    // logger.Notice(`Added watching [[Accounts]] ${this.accountList.toString()}`)
-    logger.Notice(`Added watching [[Accounts]] ${this.accountList[this.accountList.length-1]}`)
+    // logger.Notice(`Added watching [[Accounts]] ${this.accountList[this.accountList.length-1]}`)
   }
   appendToken(..._tokens: IToken[]): void {
     for (let i = 0; i < _tokens.length; i++) {
@@ -106,8 +105,7 @@ export default class CashFlow {
         this.tokenList.push(_tokens[i])
       }
     }
-    // logger.Notice(`Added watching list[[TOKEN]] ${this.tokenList.toString()}`)
-    logger.Notice(`Added watching list[[TOKEN]] ${this.tokenList[this.tokenList.length-1]}`)
+    // logger.Notice(`Added watching list[[TOKEN]] ${this.tokenList[this.tokenList.length-1]}`)
   }
   getTokens(): IToken[] {
     return this.tokenList

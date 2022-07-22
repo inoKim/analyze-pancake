@@ -1,9 +1,9 @@
 import "@nomiclabs/hardhat-waffle";
-import {deploying} from "./deploy"
+import { deploying } from "./deploy"
 
 async function excute() {
-   await deploying()
-  
+  await deploying()
+
 }
 excute()
   .then(() => process.exit(0))
