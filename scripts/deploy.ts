@@ -3,7 +3,7 @@ import { ethers } from "hardhat"
 import hre from "hardhat";
 import { Contract } from "ethers";
 import fs from "fs";
-import l from "../libs/logger"
+import {Notice, Deploy} from "../libs/logger"
 
 require("dotenv").config()
 
@@ -20,7 +20,8 @@ export interface IBucket {
   TokenB?: Contract
   TokenC?: Contract
   TokenD?: Contract
-
+  TokenE?: Contract
+  TokenF?: Contract
 }
 type fn = () => Promise<Contract>;
 
@@ -40,7 +41,7 @@ const intiForDump = async () => {
     const time = new Date().toTimeString().split(" ")[0];
     await fs.promises.rename(fileName, `${fileName}_${time}`)
   } catch (e) {
-    l.Notice('there is no dump file.')
+    Notice('there is no dump file.')
   }
   fs.appendFileSync(fileName, `network=${hre.network.name}`)
   fs.appendFileSync(fileName, "\n")
@@ -48,7 +49,7 @@ const intiForDump = async () => {
 
 const deploy_tokenA = async () => {
   const name: string = "WBNB"
-  l.Deploy("tokenA")
+  Deploy("tokenA")
   let fac
   fac = await ethers.getContractFactory(name)
   const con = await fac.deploy()
@@ -58,7 +59,7 @@ const deploy_tokenA = async () => {
 }
 const deploy_tokenB = async () => {
   const name: string = "WBNB"
-  l.Deploy("tokenB")
+  Deploy("tokenB")
   let fac
   fac = await ethers.getContractFactory(name)
   const con = await fac.deploy()
@@ -69,7 +70,7 @@ const deploy_tokenB = async () => {
 
 const deploy_tokenC = async () => {
   const name: string = "WBNB"
-  l.Deploy("tokenC")
+  Deploy("tokenC")
   let fac
   fac = await ethers.getContractFactory(name)
   const con = await fac.deploy()
@@ -79,7 +80,7 @@ const deploy_tokenC = async () => {
 }
 const deploy_tokenD = async () => {
   const name: string = "WBNB"
-  l.Deploy("tokenD")
+  Deploy("tokenD")
   let fac
   fac = await ethers.getContractFactory(name)
   const con = await fac.deploy()
@@ -88,9 +89,29 @@ const deploy_tokenD = async () => {
   return con
 }
 
+const deploy_tokenE = async () => {
+  const name: string = "WBNB"
+  Deploy("tokenE")
+  let fac
+  fac = await ethers.getContractFactory(name)
+  const con = await fac.deploy()
+  Contracts.TokenE = con
+  dump("tokenE", con.address)
+  return con
+}
+const deploy_tokenF = async () => {
+  const name: string = "WBNB"
+  Deploy("tokenF")
+  let fac
+  fac = await ethers.getContractFactory(name)
+  const con = await fac.deploy()
+  Contracts.TokenF = con
+  dump("tokenF", con.address)
+  return con
+}
 const deploy_weth = async () => {
   const name: string = "WBNB"
-  l.Deploy(name)
+  Deploy(name)
   let fac
   fac = await ethers.getContractFactory(name)
   const con = await fac.deploy()
@@ -101,7 +122,7 @@ const deploy_weth = async () => {
 
 const deploy_cake = async () => {
   const name: string = "CakeToken"
-  l.Deploy(name)
+  Deploy(name)
   let fac
   fac = await ethers.getContractFactory(name)
   const con = await fac.deploy()
@@ -111,7 +132,7 @@ const deploy_cake = async () => {
 }
 const deploy_syrup = async () => {
   const name: string = "SyrupBar"
-  l.Deploy(name)
+  Deploy(name)
   let fac
   fac = await ethers.getContractFactory(name)
   const con = await fac.deploy(Contracts.Cake?.address)
@@ -121,7 +142,7 @@ const deploy_syrup = async () => {
 }
 const deploy_pancakeFactory = async () => {
   const name: string = "PancakeFactory"
-  l.Deploy(name)
+  Deploy(name)
   let fac
   fac = await ethers.getContractFactory(name)
   const con = await fac.deploy(Contracts.Feeto)
@@ -132,7 +153,7 @@ const deploy_pancakeFactory = async () => {
 
 const deploy_pancakeRouter = async () => {
   const name: string = "PancakeRouter"
-  l.Deploy(name)
+  Deploy(name)
   const fac = await ethers.getContractFactory(name)
   const con = await fac.deploy(Contracts.PancakeFactory?.address, Contracts.WETH?.address)
   await con.deployed()
@@ -143,7 +164,7 @@ const deploy_pancakeRouter = async () => {
 
 const deploy_MasterChefV1 = async () => {
   const name: string = "MasterChef"
-  l.Deploy(name)
+  Deploy(name)
   const fac = await ethers.getContractFactory(name)
   const con = await fac.deploy(Contracts.Cake?.address,
     Contracts.Syrup?.address,
@@ -158,7 +179,7 @@ const deploy_MasterChefV1 = async () => {
 
 const deploy_MasterChefV2 = async () => {
   const name: string = "MasterChefV2"
-  l.Deploy(name)
+  Deploy(name)
   const fac = await ethers.getContractFactory(name)
   const con = await fac.deploy(Contracts.MasterChef?.address ,
      Contracts.Cake?.address,
@@ -181,6 +202,8 @@ const deploying = async () => {
     deploy_tokenB,
     deploy_tokenC,
     deploy_tokenD,
+    deploy_tokenE,
+    deploy_tokenF,
     deploy_cake,
     deploy_syrup,
     deploy_MasterChefV1,

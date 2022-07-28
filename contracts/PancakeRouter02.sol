@@ -296,7 +296,8 @@ library PancakeLibrary {
                 factory,
                 keccak256(abi.encodePacked(token0, token1)),
                 // hex'00fb7f630766e6a796048ea87d01acd3068e8ff67d078148a3fa3f4a84f69bd5' // init code hash
-                hex'4db428173530b3ea8e362602f0ab91b7c8356d62b4a1e276ef6b061857a55a93'
+                // hex'4db428173530b3ea8e362602f0ab91b7c8356d62b4a1e276ef6b061857a55a93'
+                hex'0a220c410da65a8c4943bfe8429496a75536a38f1f3da9675e9c3a2658743ec7'
             ))));
     }
 
@@ -319,7 +320,7 @@ library PancakeLibrary {
     function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) internal pure returns (uint amountOut) {
         require(amountIn > 0, 'PancakeLibrary: INSUFFICIENT_INPUT_AMOUNT');
         require(reserveIn > 0 && reserveOut > 0, 'PancakeLibrary: INSUFFICIENT_LIQUIDITY');
-        uint amountInWithFee = amountIn.mul(9975);
+        uint amountInWithFee = amountIn.mul(9975); // 수수료 제외 금액
         uint numerator = amountInWithFee.mul(reserveOut);
         uint denominator = reserveIn.mul(10000).add(amountInWithFee);
         amountOut = numerator / denominator;
@@ -425,7 +426,7 @@ contract PancakeRouter is IPancakeRouter02 {
             IPancakeFactory(factory).createPair(tokenA, tokenB);
         }
         (uint reserveA, uint reserveB) = PancakeLibrary.getReserves(factory, tokenA, tokenB);
-        if (reserveA == 0 && reserveB == 0) {
+        if (reserveA == 0 && reserveB == 0) { 
             (amountA, amountB) = (amountADesired, amountBDesired);
         } else {
             uint amountBOptimal = PancakeLibrary.quote(amountADesired, reserveA, reserveB);
@@ -595,7 +596,7 @@ contract PancakeRouter is IPancakeRouter02 {
         for (uint i; i < path.length - 1; i++) {
             (address input, address output) = (path[i], path[i + 1]);
             (address token0,) = PancakeLibrary.sortTokens(input, output);
-            uint amountOut = amounts[i + 1];
+            uint amountOut = amounts[i + 1]; // 
             (uint amount0Out, uint amount1Out) = input == token0 ? (uint(0), amountOut) : (amountOut, uint(0));
             address to = i < path.length - 2 ? PancakeLibrary.pairFor(factory, output, path[i + 2]) : _to;
             IPancakePair(PancakeLibrary.pairFor(factory, input, output)).swap(

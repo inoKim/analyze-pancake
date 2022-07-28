@@ -2,7 +2,6 @@ import { ethers } from "hardhat"
 import hre from "hardhat";
 import Table from "cli-table3"
 import { table } from "console"
-import logger from "../libs/logger"
 
 interface IOutliner {
   flatten(): string
