@@ -3,7 +3,7 @@
 */
 
 pragma solidity 0.6.12;
-
+import "hardhat/console.sol";
 
 // 
 /**
@@ -1566,11 +1566,14 @@ contract MasterChef is Ownable {
     // Add a new lp to the pool. Can only be called by the owner.
     // XXX DO NOT add the same LP token more than once. Rewards will be messed up if you do.
     function add(uint256 _allocPoint, IBEP20 _lpToken, bool _withUpdate) public onlyOwner {
+        // console.log(">>>>add");
         if (_withUpdate) {
             massUpdatePools();
         }
         uint256 lastRewardBlock = block.number > startBlock ? block.number : startBlock;
+        // console.log("before totalAllocPoint :" , totalAllocPoint);
         totalAllocPoint = totalAllocPoint.add(_allocPoint);
+        // console.log("after totalAllocPoint :" , totalAllocPoint);
         poolInfo.push(PoolInfo({
             lpToken: _lpToken,
             allocPoint: _allocPoint,
@@ -1578,6 +1581,7 @@ contract MasterChef is Ownable {
             accCakePerShare: 0
         }));
         updateStakingPool();
+        // console.log("<<<< end of add");
     }
 
     // Update the given pool's CAKE allocation point. Can only be called by the owner.
@@ -1630,15 +1634,26 @@ contract MasterChef is Ownable {
 
     // View function to see pending CAKEs on frontend.
     function pendingCake(uint256 _pid, address _user) external view returns (uint256) {
+        // console.log(">>>>>>>pendingCake!!");
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
         uint256 accCakePerShare = pool.accCakePerShare;
         uint256 lpSupply = pool.lpToken.balanceOf(address(this));
+        // console.log("current block number: ", block.number);
+        // console.log("lastRewardBlock: : ", pool.lastRewardBlock);
+        // console.log("lpsupply ", lpSupply);
         if (block.number > pool.lastRewardBlock && lpSupply != 0) {
             uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
             uint256 cakeReward = multiplier.mul(cakePerBlock).mul(pool.allocPoint).div(totalAllocPoint);
             accCakePerShare = accCakePerShare.add(cakeReward.mul(1e12).div(lpSupply));
+
+            // console.log("multiplier :", multiplier);
+            // console.log("cakeReward:" , cakeReward);
+            // console.log("accCakePerShare:" , accCakePerShare);
+            // console.log("currentAcc amouint: ",cakeReward.mul(1e12).div(lpSupply));
         }
+        // console.log("user.rewardDebt" ,user.rewardDebt);
+        // console.log("<<<<<<<End of pendingCake!!");
         return user.amount.mul(accCakePerShare).div(1e12).sub(user.rewardDebt);
     }
 
@@ -1653,26 +1668,42 @@ contract MasterChef is Ownable {
 
     // Update reward variables of the given pool to be up-to-date.
     function updatePool(uint256 _pid) public {
+        // console.log(">>>>>>>update pool");
+        // console.log("pid :" , _pid);
         PoolInfo storage pool = poolInfo[_pid];
         if (block.number <= pool.lastRewardBlock) {
+            // console.log("return caused by blocknumber is least than lastRewardBlock");
             return;
         }
         uint256 lpSupply = pool.lpToken.balanceOf(address(this));
         if (lpSupply == 0) {
             pool.lastRewardBlock = block.number;
+            // console.log("return ,lpSupply is zero");
             return;
         }
         uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
         uint256 cakeReward = multiplier.mul(cakePerBlock).mul(pool.allocPoint).div(totalAllocPoint);
+        // console.log("cakePerBlock: ", cakePerBlock);
+        // console.log("multiplier : ", multiplier);
+        // console.log("pool.allocPOint:", pool.allocPoint);
+        // console.log("totalAllocPoint:" , totalAllocPoint);
+        // console.log("cakeReward" , cakeReward);
         cake.mint(devaddr, cakeReward.div(10));
         cake.mint(address(syrup), cakeReward);
+        // console.log("accCakePerShare:" , pool.accCakePerShare);
+        // console.log("cakeReward:" , cakeReward);
+        // console.log("lpSUpply: " , lpSupply);
         pool.accCakePerShare = pool.accCakePerShare.add(cakeReward.mul(1e12).div(lpSupply));
         pool.lastRewardBlock = block.number;
+        // console.log("calculated accCakePershare:", pool.accCakePerShare);
+        // console.log("calculated lastRewardBlock:", pool.lastRewardBlock);
+        // console.log("<<<<<<<end of update pool");
     }
 
     // Deposit LP tokens to MasterChef for CAKE allocation.
     function deposit(uint256 _pid, uint256 _amount) public {
 
+        // console.log(">>>> deposit!!");
         require (_pid != 0, 'deposit CAKE by staking');
 
         PoolInfo storage pool = poolInfo[_pid];
@@ -1690,18 +1721,23 @@ contract MasterChef is Ownable {
         }
         user.rewardDebt = user.amount.mul(pool.accCakePerShare).div(1e12);
         emit Deposit(msg.sender, _pid, _amount);
+        // console.log("<<<<< end of deposit!!!;");
     }
 
     // Withdraw LP tokens from MasterChef.
     function withdraw(uint256 _pid, uint256 _amount) public {
-
+        // console.log("withdraw>>>>>>>");
         require (_pid != 0, 'withdraw CAKE by unstaking');
-
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
         require(user.amount >= _amount, "withdraw: not good");
+        // console.log("_amount :" , _amount);
+        // console.log("user.amount :" , user.amount);
         updatePool(_pid);
         uint256 pending = user.amount.mul(pool.accCakePerShare).div(1e12).sub(user.rewardDebt);
+        // console.log("accCakePerShare:" , pool.accCakePerShare);
+        // console.log("rewardDebt:" , user.rewardDebt);
+        // console.log("pending : " , pending);
         if(pending > 0) {
             safeCakeTransfer(msg.sender, pending);
         }
@@ -1711,6 +1747,7 @@ contract MasterChef is Ownable {
         }
         user.rewardDebt = user.amount.mul(pool.accCakePerShare).div(1e12);
         emit Withdraw(msg.sender, _pid, _amount);
+        // console.log("<<<<<< end of withdraw");
     }
 
     // Stake CAKE tokens to MasterChef

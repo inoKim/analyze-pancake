@@ -28,20 +28,20 @@ const InitEventsInterfaces = (): Interface => {
   return _parserInterface
 }
 
-const TraceLogs = (_receipt: any): string[] => {
+const TraceLogs = (_receipt: any, _functionName: string= ""): string[] => {
   const iface = InitEventsInterfaces()
   const _history = _receipt.events.map((_log:any) =>{
     const _c = iface.parseLog({topics: _log.topics, data: _log.data})
-    return _c.name + `(${_c.args})`
+    return _c.name + `(${_c.args.map((contents) =>{
+      return clc.blackBright.bold(contents)
+    })})`
     
   })
-
-
-  console.log(clc.bgBlueBright.black.bold("event history ...                                         "))
+  console.log(clc.bgXterm(224)("\t\t"+`|EventTracing: ${_functionName}                                                                                            `))
   _history.forEach((_item:string, _idx: number) =>{
-    console.log("["+_idx + "] "+ _item)
+    console.log("\t\t|"+clc.cyan.bold("["+_idx + "] ")+ clc.red(_item))
   })
-  console.log(clc.bgBlueBright.black.bold("                                                           "))
+  console.log(clc("\t\t|"+"----------------------------------------------------------------------------------------------------------------------------"))
   return _history
 }
 

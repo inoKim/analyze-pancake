@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./interfaces/IBEP20.sol";
 import "./SafeBEP20.sol";
 import "./interfaces/IMasterChef.sol";
-
+import "hardhat/console.sol";
 /// @notice The (older) MasterChef contract gives out a constant number of CAKE tokens per block.
 /// It is the only address with minting rights for CAKE.
 /// The idea for this MasterChef V2 (MCV2) contract is therefore to be the owner of a dummy token
@@ -200,6 +200,8 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
         totalBoostedShare: 0
         })
         );
+        console.log("poolInfo length :" , poolInfo.length);
+        console.log("lpToken length :" , lpToken.length);
         emit AddPool(lpToken.length.sub(1), _allocPoint, _lpToken, _isRegular);
     }
 
@@ -304,7 +306,10 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
     function deposit(uint256 _pid, uint256 _amount) external nonReentrant {
         PoolInfo memory pool = updatePool(_pid);
         UserInfo storage user = userInfo[_pid][msg.sender];
-
+        console.log("pre==========================");
+        console.log("user.amount: " , user.amount);
+        console.log("user.rewardDebt:" , user.rewardDebt);
+        console.log("user.boostMultiplier:" , user.boostMultiplier);
         require(
             pool.isRegular || whiteList[msg.sender],
             "MasterChefV2: The address is not available to deposit in this pool"
@@ -332,19 +337,24 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
         poolInfo[_pid] = pool;
 
         emit Deposit(msg.sender, _pid, _amount);
+        console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<POST");
+        console.log("user.amount: " , user.amount);
+        console.log("user.rewardDebt:" , user.rewardDebt);
+        console.log("user.boostMultiplier:" , user.boostMultiplier);
     }
 
     /// @notice Withdraw LP tokens from pool.
     /// @param _pid The id of the pool. See `poolInfo`.
     /// @param _amount Amount of LP tokens to withdraw.
     function withdraw(uint256 _pid, uint256 _amount) external nonReentrant {
+        console.log(">>> withdraw");
         PoolInfo memory pool = updatePool(_pid);
         UserInfo storage user = userInfo[_pid][msg.sender];
 
         require(user.amount >= _amount, "withdraw: Insufficient");
 
         uint256 multiplier = getBoostMultiplier(msg.sender, _pid);
-
+        console.log("multiplier : ", multiplier);
         settlePendingCake(msg.sender, _pid, multiplier);
 
         if (_amount > 0) {
@@ -359,6 +369,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
             _amount.mul(multiplier).div(BOOST_PRECISION)
         );
 
+        console.log("<<<< withdraw");
         emit Withdraw(msg.sender, _pid, _amount);
     }
 

@@ -374,21 +374,21 @@ contract PancakePair is IPancakePair, PancakeERC20 {
         uint amount0 = balance0.sub(_reserve0);
         uint amount1 = balance1.sub(_reserve1);
 
-        console.log("balanec0: ", balance0);
-        console.log("balanec1: ", balance1);
-        console.log("reserved0: ", _reserve0);
-        console.log("reserved1: ", _reserve1);
-        console.log("amount0: ", amount0);
-        console.log("amount1: ", amount1);
+        // console.log("balanec0: ", balance0);
+        // console.log("balanec1: ", balance1);
+        // console.log("reserved0: ", _reserve0);
+        // console.log("reserved1: ", _reserve1);
+        // console.log("amount0: ", amount0);
+        // console.log("amount1: ", amount1);
         bool feeOn = _mintFee(_reserve0, _reserve1);
         uint _totalSupply = totalSupply; // gas savings, must be defined here since totalSupply can update in _mintFee
         if (_totalSupply == 0) {
             liquidity = Math.sqrt(amount0.mul(amount1)).sub(MINIMUM_LIQUIDITY);
-            console.log("initial mint : " , liquidity);
+            // console.log("initial mint : " , liquidity);
            _mint(address(0), MINIMUM_LIQUIDITY); // permanently lock the first MINIMUM_LIQUIDITY tokens
         } else {
             liquidity = Math.min(amount0.mul(_totalSupply) / _reserve0, amount1.mul(_totalSupply) / _reserve1);
-            console.log("more mint: " , liquidity);
+            // console.log("more mint: " , liquidity);
         }
         require(liquidity > 0, 'Pancake: INSUFFICIENT_LIQUIDITY_MINTED');
         _mint(to, liquidity);
