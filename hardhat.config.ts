@@ -2,6 +2,7 @@ require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-ganache");
 import { task } from "hardhat/config";
 require("dotenv").config()
+import "@nomiclabs/hardhat-etherscan";
 
 import { version } from "os";
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -21,6 +22,11 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
+  etherscan: {
+    // Your API key for Etherscan
+    // Obtain one at https://etherscan.io/
+    apiKey: "IHH1D4CN7K2Q452TG6FQBQXTXINKP9J12X"
+  },
   solidity: {
     compilers: [
       { version: "0.4.18",
