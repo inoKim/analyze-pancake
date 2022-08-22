@@ -3,7 +3,7 @@ import * as deployment from "../scripts/deploy";
 import { Signer } from "ethers";
 import { IBucket } from "../scripts/deploy";
 import { Title, Deploy, Notice, Log, TitleEx } from "../libs/logger"
-import {printBlockCount} from "../libs/common"
+import { printBlockCount } from "../libs/common"
 
 import hre from "hardhat";
 
@@ -11,42 +11,55 @@ import hre from "hardhat";
 
 let _signers: Signer[];
 export let _dpm: IBucket;
-let tx,receipt
+let tx, receipt
 const decimal = ethers.BigNumber.from(10).pow(18)
 
+type exeOption = {
+  useExsitContract: boolean
+}
+let opt: exeOption = {useExsitContract: false}
+
+export function loadEnvs() {
+  var argv = process.argv.slice(2)
+  console.log('argv:' , argv)
+  // opt.useExsitContract = argv["u"] === "true" ? true : false
+}
+
 export async function commonDeploy() {
+
+  if (opt.useExsitContract) { // when -u option have been "true"
+    console.log("load exsiting smart conract from .deploy")
+  } else {// when -u option have been "false"
+    console.log('deploy new contracts')
     await deployment.deploying()
     _dpm = deployment.Contracts
 
     _signers = await ethers.getSigners()
     _signers = _signers.slice(0, 3) as Signer[]
-    // _signers.map(async (item) => {
-    //   flowMonitor.appendAccount(await item.getAddress())
-    // })
 
-    // flowMonitor.appendToken(new Token(_dpm.TokenA!.address, "TokenA"))
-    // flowMonitor.appendToken(new Token(_dpm.TokenA!.address, "TokenA"))
-    // flowMonitor.appendToken(new Token(_dpm.TokenA!.address, "TokenA"))
     // flowMonitor.appendToken(new Token(_dpm.TokenA!.address, "TokenA"))
     _signers.map(async (item) => {
-      _dpm.TokenA?.deposit({ value: ethers.utils.parseEther("500.0") })
-      _dpm.TokenB?.deposit({ value: ethers.utils.parseEther("500.0") })
-      _dpm.TokenC?.deposit({ value: ethers.utils.parseEther("500.0") })
-      _dpm.TokenD?.deposit({ value: ethers.utils.parseEther("500.0") })
+     let _tx = await  _dpm.TokenA?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
+     let _receipt = await _tx.wait()
+     _tx = await  _dpm.TokenB?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
+     _receipt = await _tx.wait()
+     _tx = await  _dpm.TokenC?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
+     _receipt = await _tx.wait()
+     _tx = await  _dpm.TokenD?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
+     _receipt = await _tx.wait()
+     _tx = await  _dpm.TokenE?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
+     _receipt = await _tx.wait()
+     _tx = await  _dpm.TokenF?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
+     _receipt = await _tx.wait()
 
-      _dpm.TokenA?.transfer(await item.getAddress(), ethers.BigNumber.from(500).mul(decimal))
-      _dpm.TokenB?.transfer(await item.getAddress(), ethers.BigNumber.from(500).mul(decimal))
-      _dpm.TokenC?.transfer(await item.getAddress(), ethers.BigNumber.from(500).mul(decimal))
-      _dpm.TokenD?.transfer(await item.getAddress(), ethers.BigNumber.from(500).mul(decimal))
     })
     // flowMonitor._watchNow().then(console.log)
-
-
+  }
 }
 export async function commonBeforeEach() {
   console.log("👟👟👟 BeforeEach")
   // await flowMonitor._watchNow().then(console.log)
-  await ethers.provider.send("evm_mine", []);
+  // await ethers.provider.send("evm_mine", []);
   { // FLOW providing Liquidity TokenA&B
     Log("Addliquidity(TokenA & TokenB)>")
 
@@ -83,16 +96,27 @@ export async function commonBeforeEach() {
     await tx.wait()
 
     // await printBlockCount(`Refresh LP TokenA(${_amount.toString()}) , TokenB(${_amount2.toString()})`)
-    const [sentAmountTokenA, sentAmountTokenB, amountLP] = await _dpm.PancakeRouter?.connect(_signers[1]).callStatic.addLiquidity(
-      _dpm.TokenA?.address,
-      _dpm.TokenB?.address,
-      _amount,
-      _amount2,
-      0, 0,
-      await provider1().getAddress(),
-      new Date().getTime() + 50000
-    )
 
+    console.log('1')
+    console.log('tokenA address : ',_dpm.TokenA?.address)
+    console.log("TokeA balance : ",await  _dpm.TokenA?.balanceOf( await provider1().getAddress()))
+    console.log('tokenB address : ',_dpm.TokenB?.address)
+    console.log('pancakeRouter : ',_dpm.PancakeRouter?.address)
+    console.log("amount:" , _amount.toString())
+    console.log("amount2:" , _amount2.toString())
+    console.log("providier : " , await provider1().getAddress())
+
+    // const [sentAmountTokenA, sentAmountTokenB, amountLP] = await _dpm.PancakeRouter?.connect(_signers[1]).callStatic.addLiquidity(
+    //   _dpm.TokenA?.address,
+    //   _dpm.TokenB?.address,
+    //   _amount,
+    //   _amount2,
+    //   0, 0,
+    //   await provider1().getAddress(),
+    //   new Date().getTime() + 50000
+    // )
+
+    console.log('2')
     tx = await _dpm.PancakeRouter?.connect(_signers[1]).addLiquidity(
       _dpm.TokenA?.address,
       _dpm.TokenB?.address,
@@ -104,18 +128,20 @@ export async function commonBeforeEach() {
     )
     receipt = await tx.wait()
 
+    console.log('3')
+
     // await printBlockCount(`sentAmount(A: ${sentAmountTokenA.toString()} / B: ${sentAmountTokenB.toString()}) , Recieved LP Amount: ${amountLP.toString()}`)
     const _pair0Address = await _dpm.PancakeFactory?.getPair(_dpm.TokenA?.address, _dpm.TokenB?.address)
     const _pair0 = await hre.ethers.getContractAt(hre.artifacts.readArtifactSync("PancakePair").abi, _pair0Address)
 
     let _bal = await _pair0.balanceOf(provider1().getAddress())
     let [amountA, amountB, timestamp] = await _pair0.getReserves()
-/*    Log(`LP contract's reserved tokens
-amountA :${amountA}
-amountB: ${amountB}
-timestamp : ${timestamp}
-  `)
-  */
+    /*    Log(`LP contract's reserved tokens
+    amountA :${amountA}
+    amountB: ${amountB}
+    timestamp : ${timestamp}
+      `)
+      */
   }
   { // FLOW providing Liquidity TokenC&D 
 
@@ -176,17 +202,17 @@ timestamp : ${timestamp}
 
     let _bal = await _pair0.balanceOf(provider1().getAddress())
     let [amountC, amountD, timestamp] = await _pair0.getReserves()
-/*    Log(`LP contract's reserved tokens
-amountC :${amountC}
-amountD: ${amountD}
-timestamp : ${timestamp}
-    `)
-    */
+    /*    Log(`LP contract's reserved tokens
+    amountC :${amountC}
+    amountD: ${amountD}
+    timestamp : ${timestamp}
+        `)
+        */
   }
   console.log("               🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥 Start running 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
 }
 
-export const getTokenContractByAddress = async(address: string) => {
+export const getTokenContractByAddress = async (address: string) => {
   return await hre.ethers.getContractAt(hre.artifacts.readArtifactSync("PancakePair").abi, address)
 }
 

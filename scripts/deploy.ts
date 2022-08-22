@@ -50,65 +50,77 @@ const intiForDump = async () => {
 }
 
 const deploy_tokenA = async () => {
-  const name: string = "WBNB"
-  Deploy("tokenA")
+  const name: string ="Token"
+  const tokenName = "DUCK-ETH"
+  const tokenSymbol = "dETH"
+  Deploy(`tokenA :${tokenName}`)
   let fac
   fac = await ethers.getContractFactory(name)
-  const con = await fac.deploy()
+  const con = await fac.deploy(tokenName,tokenSymbol,ethers.BigNumber.from(100000000).mul(ethers.BigNumber.from(10).pow(18)))
   Contracts.TokenA = con
-  dump("tokenA", con.address)
+  dump(`tokenA (${tokenName})`, con.address)
   return con
 }
 const deploy_tokenB = async () => {
-  const name: string = "WBNB"
-  Deploy("tokenB")
+  const name: string = "Token"
+  const tokenName = "DUCK-BTC"
+  const tokenSymbol = "dBTC"
+  Deploy(`tokenB :${tokenName}`)
   let fac
   fac = await ethers.getContractFactory(name)
-  const con = await fac.deploy()
+  const con = await fac.deploy(tokenName, tokenSymbol, ethers.BigNumber.from(200000000).mul(ethers.BigNumber.from(10).pow(18)))
   Contracts.TokenB = con
-  dump("tokenB", con.address)
+  dump(`tokenB(${tokenName})`, con.address)
   return con
 }
 
 const deploy_tokenC = async () => {
-  const name: string = "WBNB"
-  Deploy("tokenC")
+  const name: string = "Token"
+  const tokenName = "DUCK-USDT"
+  const tokenSymbol = "dUSDT"
+  Deploy(`tokenC(${tokenName})`)
   let fac
   fac = await ethers.getContractFactory(name)
-  const con = await fac.deploy()
+  const con = await fac.deploy(tokenName,tokenSymbol,ethers.BigNumber.from(300000000).mul(ethers.BigNumber.from(10).pow(18)))
   Contracts.TokenC = con
-  dump("tokenC", con.address)
+  dump(`tokenC(${tokenName})`, con.address)
   return con
 }
 const deploy_tokenD = async () => {
-  const name: string = "WBNB"
-  Deploy("tokenD")
+  const name: string = "Token"
+  const tokenName = "DUCK-DAI"
+  const tokenSymbol = "dDAI"
+  Deploy(`tokenD(${tokenName})`)
   let fac
   fac = await ethers.getContractFactory(name)
-  const con = await fac.deploy()
+  const con = await fac.deploy(tokenName,tokenSymbol ,ethers.BigNumber.from(400000000).mul(ethers.BigNumber.from(10).pow(18)))
   Contracts.TokenD = con
-  dump("tokenD", con.address)
+  dump(`tokenD(${tokenName})`, con.address)
   return con
 }
 
 const deploy_tokenE = async () => {
-  const name: string = "WBNB"
-  Deploy("tokenE")
+  const name: string = "Token"
+  const tokenName = "DUCK-D"
+  const tokenSymbol = "dDOT"
+  Deploy(`tokenE :${tokenName}`)
   let fac
   fac = await ethers.getContractFactory(name)
-  const con = await fac.deploy()
+  const con = await fac.deploy(tokenName , tokenSymbol,ethers.BigNumber.from(500000000).mul(ethers.BigNumber.from(10).pow(18)))
   Contracts.TokenE = con
-  dump("tokenE", con.address)
+  dump(`tokenE(${tokenName})`, con.address)
   return con
 }
 const deploy_tokenF = async () => {
-  const name: string = "WBNB"
-  Deploy("tokenF")
+  const name: string = "Token"
+  const tokenName = "DUCK-XRP"
+  const tokenSymbol = "dXRP"
+  Deploy(`tokenF :${tokenName}`)
   let fac
   fac = await ethers.getContractFactory(name)
-  const con = await fac.deploy()
+  const con = await fac.deploy(tokenName, tokenSymbol ,ethers.BigNumber.from(600000000).mul(ethers.BigNumber.from(10).pow(18)))
   Contracts.TokenF = con
-  dump("tokenF", con.address)
+  dump(`tokenF(${tokenName})`, con.address)
   return con
 }
 const deploy_weth = async () => {
@@ -123,15 +135,13 @@ const deploy_weth = async () => {
 }
 
 const deploy_dummy = async () => {
-  const name: string = "BEP20"
+  const name: string = "Token"
   Deploy(name)
   let fac
   fac = await ethers.getContractFactory(name)
-  const con = await fac.deploy("DummyToken" , "DMT")
+  const con = await fac.deploy("DUCK-DUMMY" , "dDMY", DUMMY_TOTAL_AMOUNT)
   await con.deployed();
   Contracts.Dummy = con
-  const tx = await con?.mint(DUMMY_TOTAL_AMOUNT)
-  const receipt = await tx.wait()
   dump(name, con.address)
   return con
 }

@@ -150,14 +150,14 @@ module.exports = {
         process.env.USER2_ZODIRPC,
       ],
     },
+    */
     bsctest: {
       url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
       accounts: [
-        process.env.OWNER_ZODIRPC,
-        process.env.USER1_ZODIRPC,
-        process.env.USER2_ZODIRPC,
+        process.env.OWNER,
+        process.env.USER1,
+        process.env.USER2,
       ],
     },
-    */
   },
 };

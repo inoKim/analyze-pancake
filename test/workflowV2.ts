@@ -1,31 +1,27 @@
 import { ethers } from "hardhat";
-import { Signer } from "ethers";
-
-import * as deployment from "../scripts/deploy";
-import { IBucket } from "../scripts/deploy";
-import { Token } from "../libs/account";
-
-import CashFlow from "../libs/account"
 
 import { Title, Deploy, Notice, Log, TitleEx } from "../libs/logger"
-import hre from "hardhat";
 import { TraceLogs } from "../libs/events"
 import { numberWithCommas, printBlockCount, spendBlockHeight } from "../libs/common";
 import {getTokenContractByAddress} from "./common";
-import { LogDescription } from "ethers/lib/utils";
 
-import {commonDeploy, commonBeforeEach , provider1, provider2, owner, operator1, operator2, _dpm} from "./common"
-import exp from "constants";
+import {commonDeploy, commonBeforeEach , provider1, provider2, owner, operator1, operator2, _dpm, loadEnvs } from "./common"
 import { expect } from "chai";
 
 const decimal = ethers.BigNumber.from(10).pow(18)
 let tx, receipt
-describe(TitleEx("Pancakeswap workflow ->"), () => {
+
+
+
+describe(TitleEx("Pancakeswap workflow ->"), function(){
+  loadEnvs()
+  this.timeout(3* 60 * 1000);
   before(async () => { await commonDeploy() })
   beforeEach(async () => { await commonBeforeEach()})
 
 
   it(TitleEx("END OF deposit to MasterchefV2"), async () => {
+
     Title("deposit to MasterchefV2")
     let before: any
     const _lpAddress = await _dpm.PancakeFactory?.getPair(_dpm.TokenA?.address, _dpm.TokenB?.address)
@@ -72,5 +68,6 @@ describe(TitleEx("Pancakeswap workflow ->"), () => {
     _balCake = await _dpm.Cake?.balanceOf(provider1().getAddress())
     await printBlockCount(`erned balance :${ethers.utils.formatUnits(_balCake)}`)
     
-  })
+  }) 
+
 })
