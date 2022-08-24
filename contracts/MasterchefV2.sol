@@ -513,6 +513,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
     /// @param _pid The pool id.
     function getBoostMultiplier(address _user, uint256 _pid) public view returns (uint256) {
         uint256 multiplier = userInfo[_pid][_user].boostMultiplier;
+        console.log("multiplier-2" , multiplier );
         return multiplier > BOOST_PRECISION ? multiplier : BOOST_PRECISION;
     }
 

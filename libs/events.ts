@@ -37,7 +37,7 @@ const TraceLogs = (_receipt: any, _functionName: string= ""): string[] => {
     })})`
     
   })
-  console.log(clc.bgXterm(224)("\t\t"+`|EventTracing: ${_functionName}                                                                                            `))
+  console.log(clc.bgXterm(224)("\t\t"+`|EventTracing: ${_functionName} | txhash: ${_receipt.transactionHash}            `))
   _history.forEach((_item:string, _idx: number) =>{
     console.log("\t\t|"+clc.cyan.bold("["+_idx + "] ")+ clc.red(_item))
   })

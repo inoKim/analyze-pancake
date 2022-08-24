@@ -119,6 +119,7 @@ module.exports = {
         process.env.KSTARDIUM_USER2_PK,
       ],
       chainId: 6133342113419,
+      // gasPrice:800
     },
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/e2b43a45aab34ecdba581423d92fda49",
@@ -129,9 +130,8 @@ module.exports = {
       ],
       chainId: 4,
     },
-    /*
     ropsten: {
-      url: `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      url: `https://ropsten.infura.io/v3/e2b43a45aab34ecdba581423d92fda49`,
       accounts: [
         process.env.OWNER,
         process.env.USER1,
@@ -139,6 +139,7 @@ module.exports = {
       ],
       chainId: 3,
     },
+    /*
     zodium: {
       url: "http://ec2-3-36-46-89.ap-northeast-2.compute.amazonaws.com:8545",
       accounts: [

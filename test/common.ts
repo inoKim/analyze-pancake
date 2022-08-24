@@ -6,6 +6,7 @@ import { Title, Deploy, Notice, Log, TitleEx } from "../libs/logger"
 import { printBlockCount } from "../libs/common"
 
 import hre from "hardhat";
+import { TraceLogs } from "../libs/events";
 
 
 
@@ -38,21 +39,27 @@ export async function commonDeploy() {
     _signers = _signers.slice(0, 3) as Signer[]
 
     // flowMonitor.appendToken(new Token(_dpm.TokenA!.address, "TokenA"))
-    _signers.map(async (item) => {
+    await Promise.all(_signers.map(async (item) => {
      let _tx = await  _dpm.TokenA?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
      let _receipt = await _tx.wait()
+     TraceLogs(_receipt)
      _tx = await  _dpm.TokenB?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
      _receipt = await _tx.wait()
+     TraceLogs(_receipt)
      _tx = await  _dpm.TokenC?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
      _receipt = await _tx.wait()
+     TraceLogs(_receipt)
      _tx = await  _dpm.TokenD?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
      _receipt = await _tx.wait()
+     TraceLogs(_receipt)
      _tx = await  _dpm.TokenE?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
      _receipt = await _tx.wait()
+     TraceLogs(_receipt)
      _tx = await  _dpm.TokenF?.transfer(await item.getAddress(), ethers.utils.parseEther("500.0"))
      _receipt = await _tx.wait()
+     TraceLogs(_receipt)
 
-    })
+    }))
     // flowMonitor._watchNow().then(console.log)
   }
 }
@@ -97,10 +104,12 @@ export async function commonBeforeEach() {
 
     // await printBlockCount(`Refresh LP TokenA(${_amount.toString()}) , TokenB(${_amount2.toString()})`)
 
+    console.log('provider :', await provider1().getAddress())
     console.log('1')
     console.log('tokenA address : ',_dpm.TokenA?.address)
     console.log("TokeA balance : ",await  _dpm.TokenA?.balanceOf( await provider1().getAddress()))
     console.log('tokenB address : ',_dpm.TokenB?.address)
+    console.log("TokeB balance : ",await  _dpm.TokenB?.balanceOf( await provider1().getAddress()))
     console.log('pancakeRouter : ',_dpm.PancakeRouter?.address)
     console.log("amount:" , _amount.toString())
     console.log("amount2:" , _amount2.toString())
@@ -117,6 +126,17 @@ export async function commonBeforeEach() {
     // )
 
     console.log('2')
+    const _estimatedGas = await _dpm.PancakeRouter?.connect(await provider1()).estimateGas.addLiquidity(
+      _dpm.TokenA?.address,
+      _dpm.TokenB?.address,
+      _amount,
+      _amount2,
+      0, 0,
+      await provider1().getAddress(),
+      new Date().getTime() + 5000
+    )
+
+    console.log('estimatedGas :', _estimatedGas?.toString())
     tx = await _dpm.PancakeRouter?.connect(_signers[1]).addLiquidity(
       _dpm.TokenA?.address,
       _dpm.TokenB?.address,

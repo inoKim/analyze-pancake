@@ -15,7 +15,7 @@ let tx, receipt
 
 describe(TitleEx("Pancakeswap workflow ->"), function(){
   loadEnvs()
-  this.timeout(3* 60 * 1000);
+  this.timeout(100* 60 * 1000);
   before(async () => { await commonDeploy() })
   beforeEach(async () => { await commonBeforeEach()})
 
@@ -29,7 +29,7 @@ describe(TitleEx("Pancakeswap workflow ->"), function(){
 
     const _mcv2 = _dpm.MasterChefV2
 
-    const _allocPoint = ethers.BigNumber.from(1).mul(decimal)
+    const _allocPoint = ethers.BigNumber.from(50)
 
     Log(`provider1's LP(TokenA & TokenB) balance :${ (await _lp.balanceOf(provider1().getAddress())).toString()}`)
 
