@@ -1,7 +1,7 @@
 import clc from "cli-color";
 
 
-const _Title = (_context: string): string => clc.bgGreenBright.white.italic(_context)
+const _Title = (_context: string): string => clc.bgGreenBright.blackBright.italic(_context)
 const _Notice = (_context: string): string => clc.cyan.bold(_context)
 const _Log = (_context: string): string => clc.blue.italic(_context)
 

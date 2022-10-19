@@ -111,6 +111,17 @@ module.exports = {
       //   interval: [1000, 3000],
       // }
     },
+    ground_test: {
+      url: `https://dex.kstadium.me`,
+      accounts: [
+        process.env.KSTARDIUM_OWNER_PK,
+        process.env.KSTARDIUM_USER1_PK,
+        process.env.KSTARDIUM_USER2_PK,
+      ],
+      chainId:6133342113419,
+      // maxPriorityFeePerGas: 
+      gasPrice:800000000000,
+    },
     ground_dev: {
       url: `https://dex-mvp.dev.kstadium.io:18545`,
       accounts: [
@@ -119,7 +130,9 @@ module.exports = {
         process.env.KSTARDIUM_USER2_PK,
       ],
       chainId: 6133342113419,
-      // gasPrice:800
+      // maxPriorityFeePerGas: 
+      gasPrice:800000000000,
+      gasLimit: 0x280DE800 //672000000
     },
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/e2b43a45aab34ecdba581423d92fda49",

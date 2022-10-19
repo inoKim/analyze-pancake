@@ -1,6 +1,5 @@
 import { Interface, _toEscapedUtf8String } from "ethers/lib/utils"
-import { ethers } from "hardhat"
-import hre from "hardhat";
+import hre,{ ethers } from "hardhat"
 import clc from "cli-color";
 
 let eventABIs: string[] = []
@@ -37,7 +36,7 @@ const TraceLogs = (_receipt: any, _functionName: string= ""): string[] => {
     })})`
     
   })
-  console.log(clc.bgXterm(224)("\t\t"+`|EventTracing: ${_functionName} | txhash: ${_receipt.transactionHash}            `))
+  console.log(clc.bgXterm(224).xterm(242)("\t\t"+`|EventTracing: ${_functionName} | txhash: ${_receipt.transactionHash}            `))
   _history.forEach((_item:string, _idx: number) =>{
     console.log("\t\t|"+clc.cyan.bold("["+_idx + "] ")+ clc.red(_item))
   })
